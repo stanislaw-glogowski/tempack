@@ -5,7 +5,7 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": false,
     "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "target": "es2016",
@@ -19,7 +19,7 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "outDir": "./build"
+    "outDir": "./dist"
   },
   "include": [
     "src/**/*"

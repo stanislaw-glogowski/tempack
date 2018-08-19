@@ -1,148 +1,75 @@
 # tempack
 
-Small util which treats original `package.json` as a distribution template.
+[![NPM version][npm-image]][npm-url]
+
+Small util which treats `package.json` as a distribution template.
 
 ## Installation
 
 ```bash
-$ npm install tempack -g
-```
-
-## Configuration
-
-### Via `tempack.json`
-```json
-{
-  "package": {
-    "mergeWith": {
-      // new `package.json` configuration
-    },
-    "omit": [
-      // configration paths which needs to be omitted
-      // in distribution
-    ]
-  },
-  "files": [
-    // file / dirs paths which should be copied
-    // to distribution
-  ]
-}
-```
-
-### Via `package.json`
-```json
-{
-  "tempack": {
-    // tempack.json configration
-  }
-}
+$ npm i tempack -g
 ```
 
 ### Usage
 ```bash
 $ tempack [options] <dist>
+
+Options:
+  <dist> - distribution directory path
+
+  -v, --version              output the version number
+  -c, --config-path [file]   custom tempack.json file path
+  -p, --package-path [file]  custom package.json file path
+  -h, --help                 output usage information
 ```
-`<dist>` - distribution directory path.
 
-Options
-* -c, --config-file `[file]` - custom `tempack.json` file path
-* -p, --package-file `[file]` - custom `package.json` file path
+## Configuration Example
 
-### Example
-
-Original `package.json`
+`tempack.json` example:
 
 ```json
 {
-  "name": "tempack",
+  "mergePackageWith": {
+    "version": "1.0.0",
+    "main": "./dist/index.js"
+  },
+  "omitPackageKeys": ["private", "devDependencies"],
+  "copyFiles": ["README.md"]
+}
+```
+
+`package.json` example:
+
+```json
+{
+  "version": "0.0.0",
   "private": true,
-  "description": "Distribution util",
-  "version": "0.0.1",
-  "author": {
-    "name": "Stanislaw Glogowski",
-    "email": "hello@newobject.pl"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stanislaw-glogowski/tempack.git"
-  },
-  "scripts": {
-    "prebuild": "rimraf ./dist/*",
-    "build": "tsc",
-    "postbuild": "tempack ./dist",
-    "lint": "tslint --exclude node_modules **/*.ts"
-  },
-  "dependencies": {
-    "commander": "^2.10.0",
-    "fs-extra": "^3.0.1",
-    "lodash": "^4.17.4"
-  },
   "devDependencies": {
-    "@types/commander": "^2.9.1",
-    "@types/fs-extra": "^3.0.3",
-    "@types/lodash": "^4.14.66",
-    "@types/node": "^7.0.23",
-    "rimraf": "^2.6.1",
-    "tslint": "^5.4.2",
-    "typescript": "^2.3.4"
-  },
-  "engines": {
-    "node": ">=6.0.0"
-  },
+    "example": "0.0.1"
+  },  
   "tempack": {
-    "package": {
-      "mergeWith": {
-        "main": "./dist/index.js",
-        "bin": "./dist/index.js"
-      },
-      "omit": [
-        "private",
-        "devDependencies",
-        "scripts"
-      ]
-    }
+    "mergePackageWith": {
+       "version": "1.0.0",
+       "main": "./dist/index.js"
+    },
+    "omitPackageKeys": ["private", "devDependencies"],
+    "copyFiles": ["README.md", "INFO.md"]
   }
 }
 ```
 
-Build distribution:
-
-```bash
-$ npm run build
-```
-
-Distribution `./dist/package.json`:
+`package.json` output:
 
 ```json
 {
-  "name": "tempack",
-  "description": "Distribution util",
   "version": "0.0.1",
-  "author": {
-    "name": "Stanislaw Glogowski",
-    "email": "hello@newobject.pl"
-  },
-  "bin": "./dist/index.js",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stanislaw-glogowski/tempack.git"
-  },
-  "dependencies": {
-    "commander": "^2.10.0",
-    "fs-extra": "^3.0.1",
-    "lodash": "^4.17.4"
-  },
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "main": "./dist/index.js",
-  "bin": "./dist/index.js"
-
+  "main": "./dist/index.js"
 }
 ```
 
 ## License
 
 The MIT License
+
+[npm-image]: https://badge.fury.io/js/tempack.svg
+[npm-url]: https://npmjs.org/package/tempack
