@@ -33,4 +33,7 @@ const builder = new Builder({
   packagePath,
 }, fs, logger);
 
-builder.build();
+builder
+  .build()
+  .then(() => logger.success("successfully built"))
+  .catch(logger.error);

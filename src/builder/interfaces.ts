@@ -1,7 +1,7 @@
 import { CONFIG_FIELD_NAME } from "./constants";
 
 export interface IBuilder {
-  build(): void;
+  build(): Promise<void>;
 }
 
 export interface IBuilderOptions {

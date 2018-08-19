@@ -67,6 +67,12 @@ Options:
 }
 ```
 
+## Testing
+
+```bash
+$ npm test
+```
+
 ## License
 
 The MIT License

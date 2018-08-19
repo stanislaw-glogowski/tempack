@@ -45,14 +45,10 @@ export class Builder implements IBuilder {
   /**
    * builds
    */
-  public build(): void {
-    (async () => {
-      await this.setup();
-      await this.buildAndSavePackage();
-      await this.copyFiles();
-    })()
-      .then(() => this.logger.success("package built"))
-      .catch(this.logger.error);
+  public async build(): Promise<void> {
+    await this.setup();
+    await this.buildAndSavePackage();
+    await this.copyFiles();
   }
 
   private async setup(): Promise<void> {
@@ -68,12 +64,12 @@ export class Builder implements IBuilder {
       !this.srcPackage ||
       typeof this.srcPackage !== "object"
     ) {
-      throw new Error(`Invalid package.json at ${packagePath}`);
+      throw new Error(`invalid package.json at ${packagePath}`);
     }
 
     if (!this.srcPackage[ CONFIG_FIELD_NAME ]) {
       if (!await this.fs.fileExists(configPath)) {
-        throw new Error(`Config not found at ${configPath}`);
+        throw new Error(`config not found at ${configPath}`);
       }
 
       this.config = await this.fs.readJSON<IBuilderConfig>(configPath);
@@ -98,16 +94,16 @@ export class Builder implements IBuilder {
 
     if (
       !this.config.mergePackageWith ||
-      typeof this.srcPackage.mergePackageWith !== "object"
+      typeof this.config.mergePackageWith !== "object"
     ) {
-      throw new Error("Invalid config.mergePackageWith value");
+      throw new Error("invalid config.mergePackageWith value");
     }
 
-    if (!Array.isArray(this.srcPackage.omitPackageKeys)) {
-      throw new Error("Invalid config.omitPackageKeys value");
+    if (!Array.isArray(this.config.omitPackageKeys)) {
+      throw new Error("invalid config.omitPackageKeys value");
     }
-    if (!Array.isArray(this.srcPackage.copyFiles)) {
-      throw new Error("Invalid config.copyFiles value");
+    if (!Array.isArray(this.config.copyFiles)) {
+      throw new Error("invalid config.copyFiles value");
     }
   }
 
@@ -132,7 +128,7 @@ export class Builder implements IBuilder {
 
     await this.fs.writeJSON(distFilePath, distPackage);
 
-    this.logger.info(`Package.json saved at ${distFilePath}`);
+    this.logger.info(`package.json saved at ${distFilePath}`);
   }
 
   private async copyFiles(): Promise<void> {
@@ -149,11 +145,11 @@ export class Builder implements IBuilder {
         const distFilePath = resolve(distPath, fileName);
 
         if (!await this.fs.fileExists(srcFilePath)) {
-          throw new Error(`File ${fileName} doesn't exists`);
+          throw new Error(`file ${fileName} doesn't exists`);
         }
 
         if (await this.fs.fileExists(distFilePath)) {
-          throw new Error(`File ${fileName} already copied`);
+          throw new Error(`file ${fileName} already copied`);
         }
 
         await this.fs.copyFile(srcFilePath, distFilePath);
