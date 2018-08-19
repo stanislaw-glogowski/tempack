@@ -1,13 +1,14 @@
 {
-  "defaultSeverity": "error",
   "extends": [
     "tslint:recommended"
   ],
-  "jsRules": {},
   "rules": {
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "no-shadowed-variable": false
-  },
-  "rulesDirectory": []
+    "no-console": false,
+    "no-namespace": false,
+    "no-shadowed-variable": false,
+    "no-empty-interface": false,
+    "variable-name": false
+  }
 }
