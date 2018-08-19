@@ -36,7 +36,7 @@ const fs: IBuilderFS = {
     return result;
   },
   writeJSON: async (filePath, item) => {
-    const data = JSON.stringify(item);
+    const data = JSON.stringify(item, null, 2);
     await writeFileAsync(filePath, data, ENCODING);
   },
 };
