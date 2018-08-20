@@ -10,22 +10,29 @@ Small util which treats `package.json` as a distribution template.
 $ npm i tempack -g
 ```
 
-### Usage
+## Usage
 ```bash
 $ tempack [options] <dist>
-
-Options:
-  <dist> - distribution directory path
-
-  -v, --version              output the version number
-  -c, --config-path [file]   custom tempack.json file path
-  -p, --package-path [file]  custom package.json file path
-  -h, --help                 output usage information
 ```
 
-## Configuration Example
+`<dist>` - distribution directory path, used `process.cwd()` as default
 
-`tempack.json` example:
+**Options:**
+
+* `-v`, `--version` - output the version number
+* `-c`, `--config-path [file]` - custom tempack.json file path
+* `-p`, `--package-path [file]` - custom package.json file path
+* `-h`, `--help` - output usage information
+
+## Configuration 
+
+| Field 	| Default Value 	| Description 	|
+|--------------------	|:-------------:	|-------------------------------------------------	|
+| `mergePackageWith` 	| `{}` 	| Additional destination package fields 	|
+| `omitPackageKeys` 	| `[]` 	| Keys from source package that should be omitted 	|
+| `copyFiles` 	| `[]` 	| List of files that should be copied 	|
+
+via `tempack.json`:
 
 ```json
 {
@@ -38,27 +45,22 @@ Options:
 }
 ```
 
-`package.json` example:
+via `package.json`:
 
 ```json
 {
-  "version": "0.0.0",
-  "private": true,
-  "devDependencies": {
-    "example": "0.0.1"
-  },  
   "tempack": {
     "mergePackageWith": {
        "version": "1.0.0",
        "main": "./dist/index.js"
     },
     "omitPackageKeys": ["private", "devDependencies"],
-    "copyFiles": ["README.md", "INFO.md"]
+    "copyFiles": ["README.md"]
   }
 }
 ```
 
-`package.json` output:
+example `package.json` output:
 
 ```json
 {

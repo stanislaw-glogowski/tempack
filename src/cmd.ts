@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as program from "commander";
-import { Builder, IBuilder } from "./builder";
+import { Builder } from "./builder";
 import logger from "./logger";
 import fs from "./fs";
 
