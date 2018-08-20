@@ -46,7 +46,6 @@
     "testRegex": "(\\.spec)\\.ts$",
     "moduleFileExtensions": [
       "ts",
-      "tsx",
       "js"
     ]
   },
