@@ -5,17 +5,15 @@ import { Cmd } from "./cmd";
 import { FS } from "./fs";
 import { Logger } from "./logger";
 
-// const { silent, disableColors, ...builderOptions } = new Cmd().parseArgv();
-//
-// const logger = new Logger({
-//   silent,
-//   disableColors,
-// });
-//
-// const builder = new Builder(builderOptions, new FS(), logger);
-//
-// builder
-//   .build()
-//   .catch(logger.error);
+const { silent, disableColors, ...builderOptions } = new Cmd().parseArgv();
 
-console.log(new Cmd().parseArgv());
+const logger = new Logger({
+  silent,
+  disableColors,
+});
+
+const builder = new Builder(builderOptions, new FS(), logger);
+
+builder
+  .build()
+  .catch(logger.error);
