@@ -1,14 +1,14 @@
-import { CONFIG_FIELD_NAME } from "./constants";
-
 export interface IBuilder {
+  readSrcPackage(): Promise<IBuilderPackage>;
+  readConfig(): Promise<IBuilderConfig>;
   build(): Promise<void>;
 }
 
 export interface IBuilderOptions {
   srcPath: string;
   distPath: string;
-  configPath?: string;
-  packagePath?: string;
+  configPath: string;
+  packagePath: string;
 }
 
 export interface IBuilderConfig {
@@ -21,18 +21,5 @@ export interface IBuilderConfig {
 
 export interface IBuilderPackage {
   [ key: string ]: any;
-  [ CONFIG_FIELD_NAME ]?: IBuilderConfig;
-}
-
-export interface IBuilderFS {
-  copyFile(srcPath: string, distPath: string): Promise<void>;
-  fileExists(filePath): Promise<boolean>;
-  readJSON<T = any>(filePath): Promise<T>;
-  writeJSON<T = any>(filePath, data: T): Promise<void>;
-}
-
-export interface IBuilderLogger {
-  success(message: string): void;
-  info(message: string): void;
-  error(err: any): void;
+  tempack: IBuilderConfig;
 }

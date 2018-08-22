@@ -1,25 +1,13 @@
 import { resolve } from "path";
-import {
-  IBuilder,
-  IBuilderOptions,
-  IBuilderConfig,
-  IBuilderPackage,
-  IBuilderFS,
-  IBuilderLogger,
-} from "./interfaces";
-import {
-  CONFIG_FILE_NAME,
-  CONFIG_FIELD_NAME,
-  DIST_PATH,
-  PACKAGE_FILE_NAME,
-} from "./constants";
+import { PACKAGE_FILE_NAME } from "../shared";
+import { IFS } from "../fs";
+import { ILogger } from "../logger";
+import { IBuilder, IBuilderOptions, IBuilderConfig, IBuilderPackage } from "./interfaces";
 
 /**
  * Builder
  */
 export class Builder implements IBuilder {
-
-  private readonly options: IBuilderOptions;
 
   private config: IBuilderConfig;
 
@@ -31,80 +19,84 @@ export class Builder implements IBuilder {
    * @param fs
    * @param logger
    */
-  constructor(options: IBuilderOptions, private fs: IBuilderFS, private logger: IBuilderLogger) {
-    const { srcPath, distPath, configPath, packagePath } = options;
+  constructor(private options: IBuilderOptions, private fs: IFS, private logger: ILogger) {
+    //
+  }
 
-    this.options = {
-      srcPath,
-      distPath: resolve(srcPath, distPath || DIST_PATH),
-      configPath: resolve(srcPath, configPath || CONFIG_FILE_NAME),
-      packagePath: resolve(srcPath, packagePath || PACKAGE_FILE_NAME),
+  /**
+   * reads src package
+   */
+  public async readSrcPackage(): Promise<IBuilderPackage> {
+    const { packagePath } = this.options;
+
+    if (!await this.fs.fileExists(packagePath)) {
+      throw new Error(`package.json not found at ${packagePath}`);
+    }
+
+    const result = await this.fs.readJSON<IBuilderPackage>(packagePath);
+
+    if (!result || typeof result !== "object") {
+      throw new Error(`invalid package.json at ${packagePath}`);
+    }
+
+    return result;
+  }
+
+  /**
+   * reads config
+   */
+  public async readConfig(): Promise<IBuilderConfig> {
+    const { configPath } = this.options;
+
+    let result: IBuilderConfig;
+
+    if (!this.srcPackage.tempack) {
+      if (!await this.fs.fileExists(configPath)) {
+        throw new Error(`config not found at ${configPath}`);
+      }
+
+      result = await this.fs.readJSON<IBuilderConfig>(configPath);
+
+    } else {
+
+      result = this.srcPackage.tempack;
+      delete this.srcPackage.tempack;
+    }
+
+    result = {
+      mergePackageWith: {},
+      omitPackageKeys: [],
+      copyFiles: [],
+      ...result,
     };
+
+    if (!result || typeof this.srcPackage !== "object") {
+      throw new Error("Invalid config");
+    }
+
+    if (!result.mergePackageWith || typeof result.mergePackageWith !== "object") {
+      throw new Error("invalid config.mergePackageWith value");
+    }
+
+    if (!Array.isArray(result.omitPackageKeys)) {
+      throw new Error("invalid config.omitPackageKeys value");
+    }
+    if (!Array.isArray(result.copyFiles)) {
+      throw new Error("invalid config.copyFiles value");
+    }
+
+    return result;
   }
 
   /**
    * builds
    */
   public async build(): Promise<void> {
-    await this.setup();
+    this.srcPackage = await this.readSrcPackage();
+    this.config = await this.readConfig();
+
     await this.buildAndSavePackage();
     await this.copyFiles();
-  }
-
-  private async setup(): Promise<void> {
-    const { configPath, packagePath } = this.options;
-
-    if (!await this.fs.fileExists(packagePath)) {
-      throw new Error(`package.json not found at ${packagePath}`);
-    }
-
-    this.srcPackage = await this.fs.readJSON<IBuilderPackage>(packagePath);
-
-    if (
-      !this.srcPackage ||
-      typeof this.srcPackage !== "object"
-    ) {
-      throw new Error(`invalid package.json at ${packagePath}`);
-    }
-
-    if (!this.srcPackage[ CONFIG_FIELD_NAME ]) {
-      if (!await this.fs.fileExists(configPath)) {
-        throw new Error(`config not found at ${configPath}`);
-      }
-
-      this.config = await this.fs.readJSON<IBuilderConfig>(configPath);
-    } else {
-      this.config = this.srcPackage[ CONFIG_FIELD_NAME ];
-      delete this.srcPackage[ CONFIG_FIELD_NAME ];
-    }
-
-    if (
-      !this.config ||
-      typeof this.srcPackage !== "object"
-    ) {
-      throw new Error("Invalid config");
-    }
-
-    this.config = {
-      mergePackageWith: {},
-      omitPackageKeys: [],
-      copyFiles: [],
-      ...this.config,
-    };
-
-    if (
-      !this.config.mergePackageWith ||
-      typeof this.config.mergePackageWith !== "object"
-    ) {
-      throw new Error("invalid config.mergePackageWith value");
-    }
-
-    if (!Array.isArray(this.config.omitPackageKeys)) {
-      throw new Error("invalid config.omitPackageKeys value");
-    }
-    if (!Array.isArray(this.config.copyFiles)) {
-      throw new Error("invalid config.copyFiles value");
-    }
   }
 
   private async buildAndSavePackage(): Promise<void> {

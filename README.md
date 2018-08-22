@@ -20,8 +20,10 @@ $ tempack [options] <dist>
 **Options:**
 
 * `-v`, `--version` - output the version number
-* `-c`, `--config-path [file]` - custom tempack.json file path
-* `-p`, `--package-path [file]` - custom package.json file path
+* `-c`, `--config-path [file]` - config file path (default: `tempack.json`)
+* `-p`, `--package-path [file]` - package file path (default: `package.json`)
+* `-s`, `--silent` - turn on silent mode
+* `--disable-colors` - turn off colors
 * `-h`, `--help` - output usage information
 
 ## Configuration 
@@ -38,7 +40,7 @@ via `tempack.json`:
 {
   "mergePackageWith": {
     "version": "1.0.0",
-    "main": "./dist/index.js"
+    "main": "./index.js"
   },
   "omitPackageKeys": ["private", "devDependencies"],
   "copyFiles": ["README.md"]
@@ -49,23 +51,32 @@ via `package.json`:
 
 ```json
 {
+  "name": "example",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Example Package",
+  "devDependencies": {
+    "lib": "0.0.0"
+  },
   "tempack": {
     "mergePackageWith": {
        "version": "1.0.0",
-       "main": "./dist/index.js"
+       "main": "./index.js"
     },
     "omitPackageKeys": ["private", "devDependencies"],
-    "copyFiles": ["README.md"]
+    "copyFiles": ["README.md", "LICENSE.md"]
   }
 }
 ```
 
-example `package.json` output:
+The above example will copy `README.md` and `LICENSE.md` files into `./dist` dir and build `./dist/package.json`:
 
 ```json
 {
+  "name": "example",
+  "description": "Example Package",
   "version": "0.0.1",
-  "main": "./dist/index.js"
+  "main": "./index.js"
 }
 ```
 
