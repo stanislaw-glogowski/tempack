@@ -15,7 +15,7 @@ $ npm i tempack -g
 $ tempack [options] <dist>
 ```
 
-`<dist>` - distribution directory path, used `./dist` as default
+`<dist>` - distribution directory path (default: `./dist`)
 
 **Options:**
 
