@@ -15,7 +15,7 @@ $ npm i tempack -g
 $ tempack [options] <dist>
 ```
 
-`<dist>` - distribution directory path, used `process.cwd()` as default
+`<dist>` - distribution directory path, used `./dist` as default
 
 **Options:**
 
