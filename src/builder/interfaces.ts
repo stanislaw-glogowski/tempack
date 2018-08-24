@@ -17,6 +17,7 @@ export interface IBuilderConfig {
   };
   omitPackageKeys: string[];
   copyFiles: string[];
+  copyDirs: string[];
 }
 
 export interface IBuilderPackage {

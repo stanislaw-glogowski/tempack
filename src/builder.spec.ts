@@ -10,7 +10,8 @@ describe("Builder", () => {
   };
 
   const fs = {
-    copyFile: jest.fn(),
+    copyPath: jest.fn(),
+    dirExists: jest.fn(),
     fileExists: jest.fn(),
     readFile: jest.fn(),
     writeFile: jest.fn(),
@@ -47,7 +48,19 @@ describe("Builder", () => {
 
     it("should build package", async () => {
 
-      fs.copyFile.mockImplementation(() => Promise.resolve());
+      fs.copyPath.mockImplementation(() => Promise.resolve());
+      fs.dirExists.mockImplementation((fileName) => {
+        let result = true;
+        switch (fileName) {
+          case "/dist/dir1":
+          case "/dist/dir2":
+            result = false;
+            break;
+        }
+
+        return Promise.resolve(result);
+      });
+
       fs.fileExists.mockImplementation((fileName) => {
         let result = true;
         switch (fileName) {
@@ -79,6 +92,7 @@ describe("Builder", () => {
               },
               omitPackageKeys: [ "private" ],
               copyFiles: ["file1", "file2", "file3"],
+              copyDirs: ["dir1", "dir2"],
             };
             break;
         }
@@ -94,7 +108,7 @@ describe("Builder", () => {
         author: "author",
         description: "description",
       });
-      expect(fs.copyFile).toHaveBeenCalledTimes(3);
+      expect(fs.copyPath).toHaveBeenCalledTimes(5);
     });
   });
 });

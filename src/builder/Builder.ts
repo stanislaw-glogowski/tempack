@@ -67,6 +67,7 @@ export class Builder implements IBuilder {
       mergePackageWith: {},
       omitPackageKeys: [],
       copyFiles: [],
+      copyDirs: [],
       ...result,
     };
 
@@ -81,8 +82,9 @@ export class Builder implements IBuilder {
     if (!Array.isArray(result.omitPackageKeys)) {
       throw new Error("invalid config.omitPackageKeys value");
     }
-    if (!Array.isArray(result.copyFiles)) {
-      throw new Error("invalid config.copyFiles value");
+
+    if (!Array.isArray(result.copyDirs)) {
+      throw new Error("invalid config.copyDirs value");
     }
 
     return result;
@@ -97,6 +99,7 @@ export class Builder implements IBuilder {
 
     await this.buildAndSavePackage();
     await this.copyFiles();
+    await this.copyDirs();
   }
 
   private async buildAndSavePackage(): Promise<void> {
@@ -144,9 +147,37 @@ export class Builder implements IBuilder {
           throw new Error(`file ${fileName} already copied`);
         }
 
-        await this.fs.copyFile(srcFilePath, distFilePath);
+        await this.fs.copyPath(srcFilePath, distFilePath);
 
         this.logger.info(`${fileName} saved at ${distFilePath}`);
+      }
+    }
+  }
+
+  private async copyDirs(): Promise<void> {
+    const { srcPath, distPath } = this.options;
+    const { copyDirs: dirNames } = this.config;
+
+    for (const dirName of dirNames) {
+
+      if (
+        dirName &&
+        typeof dirName === "string"
+      ) {
+        const srcDirPath = resolve(srcPath, dirName);
+        const distDirPath = resolve(distPath, dirName);
+
+        if (!await this.fs.dirExists(srcDirPath)) {
+          throw new Error(`dir ${srcDirPath} doesn't exists`);
+        }
+
+        if (await this.fs.dirExists(distDirPath)) {
+          throw new Error(`dir ${distDirPath} already copied`);
+        }
+
+        await this.fs.copyPath(srcDirPath, distDirPath);
+
+        this.logger.info(`${dirName} saved at ${distDirPath}`);
       }
     }
   }

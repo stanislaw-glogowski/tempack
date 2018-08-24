@@ -1,5 +1,6 @@
 export interface IFS {
-  copyFile(srcPath: string, distPath: string): Promise<void>;
+  copyPath(srcPath: string, distPath: string): Promise<void>;
+  dirExists(filePath: string): Promise<boolean>;
   fileExists(filePath: string): Promise<boolean>;
   readFile(filePath: string): Promise<string>;
   writeFile(filePath: string, content: string): Promise<void>;

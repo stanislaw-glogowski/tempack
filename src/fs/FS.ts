@@ -15,9 +15,25 @@ const writeFileAsync = promisify(writeFile);
 export class FS implements IFS {
 
   /**
-   * copies file
+   * copy path
    */
-  public copyFile = copy;
+  public copyPath = copy;
+
+  /**
+   * checks if dir exists
+   * @param filePath
+   */
+  public async dirExists(filePath: string): Promise<boolean> {
+    let result: boolean;
+    try {
+      const stat = await statAsync(filePath);
+      result = stat.isDirectory();
+    } catch (err) {
+      result = false;
+    }
+
+    return result;
+  }
 
   /**
    * checks if file exists

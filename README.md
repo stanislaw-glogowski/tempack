@@ -33,6 +33,7 @@ $ tempack [options] <dist>
 | `mergePackageWith` 	| `{}` 	| Additional destination package fields 	|
 | `omitPackageKeys` 	| `[]` 	| Keys from source package that should be omitted 	|
 | `copyFiles` 	| `[]` 	| List of files that should be copied 	|
+| `copyDirs` 	| `[]` 	| List of directories that should be copied 	|
 
 via `tempack.json`:
 
@@ -43,7 +44,8 @@ via `tempack.json`:
     "main": "./index.js"
   },
   "omitPackageKeys": ["private", "devDependencies"],
-  "copyFiles": ["README.md"]
+  "copyFiles": ["README.md", "LICENSE.md"],
+  "copyDirs": ["@types"]
 }
 ```
 
@@ -64,12 +66,13 @@ via `package.json`:
        "main": "./index.js"
     },
     "omitPackageKeys": ["private", "devDependencies"],
-    "copyFiles": ["README.md", "LICENSE.md"]
+    "copyFiles": ["README.md", "LICENSE.md"],
+    "copyDirs": ["@types"]
   }
 }
 ```
 
-The above example will copy `README.md` and `LICENSE.md` files into `./dist` dir and build `./dist/package.json`:
+The above example will copy `README.md`, `LICENSE.md` files and `@types` directory into `./dist` dir and build `./dist/package.json`:
 
 ```json
 {
